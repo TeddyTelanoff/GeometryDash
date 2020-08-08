@@ -16,26 +16,13 @@ class Block
     switch(type)
     {
       case AIR:
-        noFill();
-        stroke(32);
-        rect(position.x * blockWidth, position.y * blockHeight, blockWidth, blockHeight);
+        
         break;
       case BLOCK:
-        fill(100);
-        stroke(64);
-        rect(position.x * blockWidth, position.y * blockHeight, blockWidth, blockHeight);
+        image(resize(Iblock, blockWidth, blockHeight), position.x * blockWidth, position.y * blockHeight);
         break;
       case SPIKE:
-        pushMatrix();
-          translate(position.x * blockWidth, position.y * blockHeight);
-          beginShape();
-            fill(#FF0000);
-            stroke(64);
-            vertex(0.5 * blockWidth, 0);
-            vertex(1 * blockWidth, 1 * blockHeight);
-            vertex(0, 1 * blockHeight);
-          endShape();
-        popMatrix();
+        image(resize(Ispike, blockWidth, blockHeight), position.x * blockWidth, position.y * blockHeight);
         break;
     }
   }

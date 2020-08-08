@@ -20,8 +20,6 @@ class Player
   
   void draw()
   {
-    fill(#00FF00);
-    noStroke();
-    rect(position.x * blockWidth, position.y * blockHeight, blockWidth, blockHeight);
+    image(resize(Iplayer, blockWidth, blockHeight), position.x * blockWidth, position.y * blockHeight);
   }
 }
