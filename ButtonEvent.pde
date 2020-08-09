@@ -1,0 +1,4 @@
+interface ButtonEvent
+{
+  void onClicked();
+}

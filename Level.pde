@@ -15,10 +15,6 @@ class Level
   void genMap()
   {
     blocks = new HashMap();
-    size = new PVector(map[0].length(), map.length);
-    
-    blockWidth = width / size.x;
-    blockHeight = height / size.y;
     
     for (int y = 0; y < map.length; y++)
       for (int x = 0; x < map[y].length(); x++)
@@ -26,13 +22,19 @@ class Level
         {
           case Player.CHAR:
             blocks.put(new PVector(x, y), new Block(Block.AIR));
-            player = new Player(new PVector(x, y), 1.5, 0.25);
+            player = new Player(new PVector(x, y), 0.75, 0.25);
             break;
           case Block.BLOCK:
             blocks.put(new PVector(x, y), new Block(Block.BLOCK));
             break;
           case Block.SPIKE:
             blocks.put(new PVector(x, y), new Block(Block.SPIKE));
+            break;
+          case Block.SHADOW:
+            blocks.put(new PVector(x, y), new Block(Block.SHADOW));
+            break;
+          case Block.ACID:
+            blocks.put(new PVector(x, y), new Block(Block.ACID));
             break;
           
           default:
@@ -51,19 +53,31 @@ class Level
     
     if (blocks.get(new PVector(player.intPos().x, player.intPos().y + 1)).type != Block.BLOCK)
     {
-      player.position.y += player.gravity;
+      player.applyGravity();
       
-      if (blocks.containsKey(player.intPos()))
-        if (blocks.get(player.intPos()).type == Block.SPIKE)
+      PVector before = player.intPos();
+      player.update();
+      
+      for (int y = int(before.y); y < player.intPos().y; y++)
+      {
+        if (blocks.containsKey(new PVector(player.intPos().x, y)))
         {
-          lose();
-          return;
+          if (blocks.get(player.intPos()).type == Block.SPIKE)
+          {
+            lose();
+            return;
+          }
+          else if (blocks.get(player.intPos()).type == Block.BLOCK)
+          {
+            player.position = new PVector(player.position.x, y - 1);
+          }
         }
+      }
     }
     
     player.position.x++;
     if (blocks.containsKey(player.intPos()))
-      if (blocks.get(player.intPos()).type != Block.AIR)
+      if (!(blocks.get(player.intPos()).type == Block.AIR || blocks.get(player.intPos()).type == Block.SHADOW))
       {
         lose();
         return;
@@ -85,6 +99,7 @@ class Level
   {
     if (blocks.containsKey(new PVector(player.intPos().x, player.intPos().y + 1)))
       if (blocks.get(new PVector(player.intPos().x, player.intPos().y + 1)).type == Block.BLOCK)
-        player.position.y -= player.jumpHeight;
+        player.jump();
+    player.update();
   }
 }

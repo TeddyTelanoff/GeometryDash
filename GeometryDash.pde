@@ -1,10 +1,11 @@
 final float updateDelay = 0.14;
+final PVector blocks = new PVector(16/2*3, 10/2*3);
 
 float blockWidth, blockHeight;
 
 // Assets Stuff
 
-PImage Iblock, Ispike, Iplayer;
+PImage Iblock, Ispike, Ishadow, Iacid, Iplayer;
 
 // Time Stuff
 
@@ -15,54 +16,78 @@ float et = updateDelay;
 
 // Level Stuff
 
-String[][] levels =
-{
-  {
-    "..........",
-    "..........",
-    "G.......A.",
-    "##########"
-  },
-  {
-    ".............",
-    ".............",
-    "G.......AA...",
-    "############."
-  }
-};
+String[][] levels;
 
 int level;
 
 Level l;
+
+Boolean cont;
+
+// GUI Stuff
+
+Button respawnB;
 
 void setup()
 {
   fullScreen();
   imageMode(CORNER);
   
-  Iblock  = loadImage("block.png");
-  Ispike  = loadImage("spike.png");
-  Iplayer = loadImage("player.png");
+  blockWidth  = width  / blocks.x;
+  blockHeight = height / blocks.y;
+  
+  levels =
+    new String[][]
+    {
+      loadStrings("tutorial.lvl"),
+      //loadStrings("insane.lvl")
+      {}
+    };
+  
+  //
+  
+  Iblock  = loadImage( "block.png"  );
+  Ispike  = loadImage( "spike.png"  );
+  Ishadow = loadImage( "shadow.png" );
+  Iacid   = loadImage(  "acid.png"  );
+  Iplayer = loadImage( "player.png" );
+  
+  //
+  
+  respawnB = new Button(new PVector(100, 100), new PVector(width - 100, height - 100), color(100), color(69), color(32));
+  
+  //
   
   nextLevel();
 }
 
 void draw()
-{ 
-  deltaTime = (float) (millis() - millis) / 1000;
-  millis = millis();
-  
-  background(57);
-  
-  if (et >= updateDelay)
+{
+  if (cont == null)
   {
-    et = 0;
+    deltaTime = (float) (millis() - millis) / 1000;
+    millis = millis();
     
-    l.update();
+    background(57);
+    
+    if (et >= updateDelay)
+    {
+      et = 0;
+      
+      l.update();
+    }
+    et += deltaTime;
+    
+    l.draw();
   }
-  et += deltaTime;
-  
-  l.draw();
+  else if (cont)
+  {
+    win();
+  }
+  else
+  {
+    lose();
+  }
 }
 
 void keyReleased()
@@ -77,13 +102,27 @@ void mousePressed()
 }
 
 void win()
-{
-  noLoop();
+{ 
+  background(57);
+  
+  fill(#00FF00);
+  textAlign(CENTER, CENTER);
+  textSize(height/3);
+  text("You Won!", width/2, height/2);
+  
+  cont = true;
 }
 
 void lose()
 {
-  noLoop();
+  background(#FF0000);
+  
+  fill(57);
+  textAlign(CENTER, CENTER);
+  textSize(height/3);
+  text("You Lost!", width/2, height/2);
+  
+  cont = false;
 }
 
 void nextLevel()
